@@ -2,6 +2,8 @@
 
 A audio vizualization React hook/component that's simple yet incredibly extendable
 
+Check out the live demo at [http://react-audio-viz.surge.sh/](http://react-audio-viz.surge.sh/)
+
 ## Development
 
 Run `yarn` to install dependencies then `yarn docs:dev` to fire up the example page at `localhost:1234` where you can test any changes made to the core library in `src/lib`.
