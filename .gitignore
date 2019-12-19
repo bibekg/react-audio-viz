@@ -1,0 +1,10 @@
+node_modules/
+public/
+dist/
+dev/
+.cache/
+.vscode/
+.idea/
+yarn-error.log
+package-lock.json
+.DS_Store
