@@ -10,17 +10,20 @@
   "license": "MIT",
   "main": "src/index.tsx",
   "scripts": {
-    "dev": "concurrently -r \"npm:type-check:watch\" \"npm:start\"",
-    "start": "parcel ./src/index.html",
-    "build": "npm run type-check && parcel build ./src/index.html --public-url '/'",
     "prettify": "prettier --write './src/**/*.{ts,tsx}'",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
+    "lib:dev": "concurrently -r \"npm:type-check:watch\" \"npm:start\"",
+    "lib:start": "parcel ./src/index.html",
+    "lib:build": "npm run type-check && parcel build ./src/index.html --public-url '/'",
     "docs:dev": "parcel serve src/docs/index.html -d dev/docs",
     "docs:build": "parcel build src/docs/index.html -d dist/docs",
-    "docs:deploy": "yarn docs:build && surge dist/docs --domain react-audio-viz.surge.sh"
+    "docs:deploy": "yarn docs:build && surge dist/docs --domain react-audio-viz.surge.sh",
+    "dev": "yarn docs:dev",
+    "build": "concurrently -r \"yarn lib:build\" \"yarn docs:build\"",
+    "deploy": "yarn docs:deploy"
   },
   "husky": {
     "hooks": {

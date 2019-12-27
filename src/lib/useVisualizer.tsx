@@ -1,7 +1,10 @@
 import * as React from 'react'
 import { VisualizationModel } from './models/types'
 
-type UseVisualizerReturnValue = [JSX.Element, () => void]
+type UseVisualizerReturnValue = [
+  ((props: VisualizerProps) => JSX.Element | null) | null,
+  () => void
+]
 
 export type VisualizerConfig = {
   width?: number
@@ -11,89 +14,85 @@ export type VisualizerConfig = {
 type MediaElement = HTMLAudioElement | HTMLVideoElement
 type MediaElementRef = React.MutableRefObject<MediaElement>
 
-const initializeVisualizer = (
-  mediaElement: MediaElement,
-  canvas: HTMLCanvasElement,
-  visualizationModel: VisualizationModel
-): 'unsupported' | 'error' | 'loading' | 'success' => {
-  // Set up audio context if it hasn't been yet
-  let audioContext
-  if (audioContext == null) {
-    if ('AudioContext' in window) {
-      audioContext = new AudioContext()
-    } else if ('webkitAudioContext' in window) {
-      audioContext = new webkitAudioContext()
-    } else {
-      console.warn("Can't show visualizations in this browser :(")
-      return 'unsupported'
-    }
-  }
-
-  if (!mediaElement) {
-    return 'loading'
-  }
-
-  const audioSrc = audioContext.createMediaElementSource(mediaElement)
-  const analyser = audioContext.createAnalyser()
-
-  // we have to connect the MediaElementSource with the analyser
-  audioSrc.connect(analyser)
-  audioSrc.connect(audioContext.destination)
-  // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
-
-  // frequencyBinCount tells you how many values you'll receive from the analyser
-  const frequencyData = new Uint8Array(analyser.frequencyBinCount)
-  const canvasContext = canvas.getContext('2d')
-  if (canvasContext == null) {
-    console.error('Could not find a 2D context for the canvas')
-    return 'error'
-  }
-
-  const createVizImageFromData = (frequencyData: Uint8Array) => {
-    const { width, height } = canvas
-    const imageData = canvasContext.createImageData(width, height)
-    for (let y = 0, i = 0; y < height; y += 1) {
-      for (let x = 0; x < width; x += 1, i += 4) {
-        const { r, g, b, a } = visualizationModel(
-          x + 1,
-          y + 1,
-          width,
-          height,
-          frequencyData
-        )
-        imageData.data[i + 0] = r
-        imageData.data[i + 1] = g
-        imageData.data[i + 2] = b
-        imageData.data[i + 3] = a || 255
-      }
-    }
-    return imageData
-  }
-
-  let vizImage
-  const renderFrame = () => {
-    requestAnimationFrame(renderFrame)
-    analyser.getByteFrequencyData(frequencyData)
-    vizImage = createVizImageFromData(frequencyData)
-    canvasContext.putImageData(vizImage, 0, 0)
-  }
-
-  audioContext.resume()
-  renderFrame()
-  return 'success'
+interface VisualizerProps {
+  width?: number
+  height?: number
+  model: VisualizationModel
 }
 
-const useVisualizer = (
-  mediaElement: MediaElementRef,
-  model: VisualizationModel,
-  config: VisualizerConfig = {}
-): UseVisualizerReturnValue => {
-  const { width = window.innerWidth, height = window.innerHeight } = config
+interface VisualizerFullProps extends VisualizerProps {
+  audioSrcRef: React.MutableRefObject<MediaElementAudioSourceNode | null>
+  analyserRef: React.MutableRefObject<AnalyserNode | null>
+  canvasRef: React.MutableRefObject<HTMLCanvasElement | null>
+}
 
-  const [hasInitialized, setHasInitialized] = React.useState(false)
-  const canvasRef = React.useRef<HTMLCanvasElement>(null)
+const NOOP_RETURN_VALUE: UseVisualizerReturnValue = [null, () => {}]
 
-  const visualization = (
+const InternalReactAudioViz = (props: VisualizerFullProps) => {
+  console.log('heres a new ReactAudioViz for ya')
+  const {
+    width = window.innerWidth,
+    height = window.innerHeight,
+    model,
+    audioSrcRef,
+    analyserRef,
+    canvasRef,
+  } = props
+
+  if (audioSrcRef.current && analyserRef.current && canvasRef.current) {
+    console.log('49')
+    const { current: analyser } = analyserRef
+    const frequencyData = new Uint8Array(analyser.frequencyBinCount)
+
+    const createVizImageFromData = (
+      frequencyData: Uint8Array,
+      canvas: HTMLCanvasElement
+    ) => {
+      const { width, height } = canvas
+      const canvasContext = canvas.getContext('2d')
+      if (canvasContext == null) {
+        console.error('Could not find a 2D context for the canvas')
+        return null
+      }
+      const imageData = canvasContext.createImageData(width, height)
+      for (let y = 0, i = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1, i += 4) {
+          const { r, g, b, a } = model(
+            x + 1,
+            y + 1,
+            width,
+            height,
+            frequencyData
+          )
+          imageData.data[i + 0] = r
+          imageData.data[i + 1] = g
+          imageData.data[i + 2] = b
+          imageData.data[i + 3] = a || 255
+        }
+      }
+      return imageData
+    }
+
+    let vizImage
+    const renderFrame = () => {
+      const { current: canvas } = canvasRef
+      if (canvas == null) {
+        return
+      }
+      requestAnimationFrame(renderFrame)
+      analyser.getByteFrequencyData(frequencyData)
+      vizImage = createVizImageFromData(frequencyData, canvas)
+      const canvasContext = canvas.getContext('2d')
+      if (canvasContext == null || vizImage == null) {
+        return
+      }
+      canvasContext.putImageData(vizImage, 0, 0)
+    }
+
+    renderFrame()
+  }
+
+  return (
     <div style={{ width: `${width}px`, height: `${height}px` }}>
       <canvas
         ref={canvasRef}
@@ -103,25 +102,66 @@ const useVisualizer = (
       />
     </div>
   )
+}
+
+const useVisualizer = (
+  mediaElementRef: MediaElementRef
+): UseVisualizerReturnValue | null => {
+  const [hasInitialized, setHasInitialized] = React.useState(false)
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
+  const audioSrcRef = React.useRef<MediaElementAudioSourceNode | null>(null)
+  const analyserRef = React.useRef<AnalyserNode | null>(null)
+  const audioContextRef = React.useRef<AudioContext | null>(null)
+
+  // Create an external ReactAudioViz for the user of this hook by passing in the necessary
+  // settings to the internal ReactAudioViz
+  const ReactAudioViz = (props: VisualizerProps) => (
+    <InternalReactAudioViz
+      canvasRef={canvasRef}
+      audioSrcRef={audioSrcRef}
+      analyserRef={analyserRef}
+      {...props}
+    />
+  )
 
   const initializer = React.useCallback(() => {
-    if (hasInitialized || canvasRef.current == null) {
+    if (hasInitialized) {
       return
     }
-    const { current: canvas } = canvasRef
 
-    let interval: any
-    const initializeThenComplete = () => {
-      const result = initializeVisualizer(mediaElement.current, canvas, model)
-      if (result !== 'loading') {
-        setHasInitialized(true)
-        clearInterval(interval)
+    console.log('initializing')
+    if (audioContextRef.current == null) {
+      if ('AudioContext' in window) {
+        audioContextRef.current = new AudioContext()
+      } else if ('webkitAudioContext' in window) {
+        audioContextRef.current = new webkitAudioContext()
+      } else {
+        console.warn("Can't show visualizations in this browser :(")
+        return NOOP_RETURN_VALUE
       }
     }
-    interval = setInterval(initializeThenComplete, 100)
-  }, [hasInitialized])
 
-  return [visualization, initializer]
+    if (audioContextRef.current && mediaElementRef.current) {
+      audioSrcRef.current = audioContextRef.current.createMediaElementSource(
+        mediaElementRef.current
+      )
+      analyserRef.current = audioContextRef.current.createAnalyser()
+      if (audioSrcRef.current && analyserRef.current) {
+        // we have to connect the MediaElementSource with the analyser
+        audioSrcRef.current.connect(analyserRef.current)
+        audioSrcRef.current.connect(audioContextRef.current.destination)
+      }
+      audioContextRef.current.resume()
+      setHasInitialized(true)
+    }
+  }, [
+    audioContextRef.current,
+    analyserRef.current,
+    audioSrcRef.current,
+    hasInitialized,
+  ])
+
+  return [ReactAudioViz, initializer]
 }
 
 export default useVisualizer

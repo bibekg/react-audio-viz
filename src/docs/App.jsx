@@ -35,14 +35,7 @@ const VisualizationContainer = styled.div`
 
 const App = () => {
   const mediaElementRef = React.useRef(null)
-  const [visualization, initializeVisualizer] = useVisualizer(
-    mediaElementRef,
-    models.polar(),
-    {
-      width: 400,
-      height: 400,
-    }
-  )
+  const [ReactAudioViz, initializeVisualizer] = useVisualizer(mediaElementRef)
 
   return (
     <MainDiv>
@@ -57,7 +50,9 @@ const App = () => {
         ref={mediaElementRef}
         src={audioFile}
       />
-      {visualization}
+      {ReactAudioViz ? (
+        <ReactAudioViz width={400} height={400} model={models.polar()} />
+      ) : null}
     </MainDiv>
   )
 }
