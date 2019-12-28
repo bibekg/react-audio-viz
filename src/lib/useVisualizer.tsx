@@ -95,8 +95,9 @@ const InternalReactAudioViz = (props: VisualizerFullProps) => {
     // otherwise performance will severely tank
     if (lastAnimationFrameRequest.current) {
       cancelAnimationFrame(lastAnimationFrameRequest.current)
+      lastAnimationFrameRequest.current = null
     }
-    renderFrame()
+    lastAnimationFrameRequest.current = requestAnimationFrame(renderFrame)
   }
 
   return (
