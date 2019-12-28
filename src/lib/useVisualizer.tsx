@@ -29,7 +29,6 @@ interface VisualizerFullProps extends VisualizerProps {
 const NOOP_RETURN_VALUE: UseVisualizerReturnValue = [null, () => {}]
 
 const InternalReactAudioViz = (props: VisualizerFullProps) => {
-  console.log('heres a new ReactAudioViz for ya')
   const {
     width = window.innerWidth,
     height = window.innerHeight,
@@ -39,8 +38,11 @@ const InternalReactAudioViz = (props: VisualizerFullProps) => {
     canvasRef,
   } = props
 
+  // Maintain record of the last animation frame request ID so that we can cancel it when we need
+  // to create a new handler (i.e. when the model prop changes)
+  const lastAnimationFrameRequest = React.useRef<number | null>(null)
+
   if (audioSrcRef.current && analyserRef.current && canvasRef.current) {
-    console.log('49')
     const { current: analyser } = analyserRef
     const frequencyData = new Uint8Array(analyser.frequencyBinCount)
 
@@ -79,7 +81,7 @@ const InternalReactAudioViz = (props: VisualizerFullProps) => {
       if (canvas == null) {
         return
       }
-      requestAnimationFrame(renderFrame)
+      lastAnimationFrameRequest.current = requestAnimationFrame(renderFrame)
       analyser.getByteFrequencyData(frequencyData)
       vizImage = createVizImageFromData(frequencyData, canvas)
       const canvasContext = canvas.getContext('2d')
@@ -89,6 +91,11 @@ const InternalReactAudioViz = (props: VisualizerFullProps) => {
       canvasContext.putImageData(vizImage, 0, 0)
     }
 
+    // Cancel existing animation frame handlers before creating new ones
+    // otherwise performance will severely tank
+    if (lastAnimationFrameRequest.current) {
+      cancelAnimationFrame(lastAnimationFrameRequest.current)
+    }
     renderFrame()
   }
 
@@ -115,13 +122,16 @@ const useVisualizer = (
 
   // Create an external ReactAudioViz for the user of this hook by passing in the necessary
   // settings to the internal ReactAudioViz
-  const ReactAudioViz = (props: VisualizerProps) => (
-    <InternalReactAudioViz
-      canvasRef={canvasRef}
-      audioSrcRef={audioSrcRef}
-      analyserRef={analyserRef}
-      {...props}
-    />
+  const ReactAudioViz = React.useMemo(
+    () => (props: VisualizerProps) => (
+      <InternalReactAudioViz
+        canvasRef={canvasRef}
+        audioSrcRef={audioSrcRef}
+        analyserRef={analyserRef}
+        {...props}
+      />
+    ),
+    [canvasRef, audioSrcRef, analyserRef]
   )
 
   const initializer = React.useCallback(() => {
@@ -129,7 +139,6 @@ const useVisualizer = (
       return
     }
 
-    console.log('initializing')
     if (audioContextRef.current == null) {
       if ('AudioContext' in window) {
         audioContextRef.current = new AudioContext()

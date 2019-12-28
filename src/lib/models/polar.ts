@@ -7,15 +7,17 @@ export type PolarVizualizationModelOptions = {
   color?: { r: number; g: number; b: number }
 }
 
+export const DEFAULT_OPTIONS = {
+  direction: 'normal',
+  scale: '2',
+  mode: 'light',
+  color: { r: 100, g: 150, b: 120 },
+}
+
 export default (
   options: PolarVizualizationModelOptions = {}
 ): VisualizationModel => {
-  const {
-    direction = 'normal',
-    scale = 2,
-    mode = 'dark',
-    color = { r: 100, g: 150, b: 120 },
-  } = options
+  const { direction, scale, mode, color } = { ...DEFAULT_OPTIONS, ...options }
 
   const colorMakerOptions: {
     [key: string]: (c: number, f: number) => number

@@ -8,16 +8,21 @@ export type WaveformVizualizationModelOptions = {
   frequencyRange?: [number, number]
 }
 
+export const DEFAULT_OPTIONS = {
+  direction: 'normal',
+  mode: 'dark',
+  scale: 0.25,
+  color: { r: 255, g: 255, b: 255 },
+  frequencyRange: [0, 18000],
+}
+
 export default (
   options: WaveformVizualizationModelOptions = {}
 ): VisualizationModel => {
-  const {
-    direction = 'normal',
-    mode = 'dark',
-    scale = 0.25,
-    color = { r: 255, g: 255, b: 255 },
-    frequencyRange = [0, 18000],
-  } = options
+  const { direction, mode, scale, color, frequencyRange } = {
+    ...DEFAULT_OPTIONS,
+    ...options,
+  }
 
   const colorMakerOptions: {
     [key: string]: (c: number, f: number) => number
