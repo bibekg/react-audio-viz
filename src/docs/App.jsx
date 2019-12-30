@@ -1,7 +1,6 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import styled, { createGlobalStyle } from 'styled-components'
-import ReactSelect from 'react-select'
 import ReactSlider from 'rc-slider/lib/Slider'
 import { CompactPicker as ColorPicker } from 'react-color'
 import SyntaxHighligher from 'react-syntax-highlighter/prism'
@@ -13,8 +12,6 @@ import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Form from 'react-bootstrap/Form'
-import Tabs from 'react-bootstrap/Tabs'
-import Tab from 'react-bootstrap/Tab'
 
 import audioFile from './sample.mp3'
 import { useVisualizer, models } from '../lib'
@@ -30,56 +27,6 @@ const GlobalStyle = createGlobalStyle`
   * {
     box-sizing: border-box;
   }
-`
-
-const MainDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  & > * {
-    position: relative;
-  }
-`
-
-const IntroText = styled.div`
-  width: 100%;
-  text-align: center;
-`
-
-const VisualizationContainer = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background: white;
-`
-
-const VizForegroundContainer = styled.div`
-  position: relative;
-  height: 100%;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`
-
-const ControlContainer = styled.div`
-  position: relative;
-  top: 400px;
-`
-
-const Foreground = styled.div`
-  margin-top: 20px;
-  background: rgba(255, 255, 255, 0.8);
-  width: 400px;
-  padding: 20px;
-`
-
-const Header = styled.div`
-  text-align: center;
-  width: 100%;
 `
 
 const EverythingDiv = styled.div`
@@ -152,14 +99,6 @@ const ControlArea = styled.div`
     margin-left: 0;
   }
 `
-
-const reactSelectStyles = {
-  container: base => ({
-    ...base,
-    flex: 1,
-  }),
-}
-// type ValidModel = keyof typeof models;
 
 const makeDemoReactCode = config => `
   const audioRef = React.useRef(null)
@@ -319,26 +258,6 @@ const App = () => {
       </Row>
     </EverythingDiv>
   )
-  //     <GlobalStyle />
-  //     {ReactAudioViz ? (
-  //       <VisualizationContainer>
-  //         <ReactAudioViz width={400} height={400} model={model} />
-  //       </VisualizationContainer>
-  //     ) : null}
-  //     <Foreground>
-  //       <Header>
-  //         <h2>react-audio-viz</h2>
-  //         <p>Sample audio from bensound.com</p>
-
-  //       </Header>
-  //       <label htmlFor="mode">Mode</label>
-  //       <label htmlFor="direction">Direction</label>
-  //       <label htmlFor="scale">Scale</label>
-
-  //       <label htmlFor="color">Color</label>
-  //     </Foreground>
-  //   </MainDiv>
-  // )
 }
 
 // flow-disable-next-line
