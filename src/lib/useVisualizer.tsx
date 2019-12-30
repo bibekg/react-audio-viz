@@ -6,17 +6,10 @@ type UseVisualizerReturnValue = [
   () => void
 ]
 
-export type VisualizerConfig = {
-  width?: number
-  height?: number
-}
-
 type MediaElement = HTMLAudioElement | HTMLVideoElement
 type MediaElementRef = React.MutableRefObject<MediaElement>
 
 interface VisualizerProps {
-  width?: number
-  height?: number
   model: VisualizationModel
 }
 
@@ -29,34 +22,16 @@ interface VisualizerFullProps extends VisualizerProps {
 const NOOP_RETURN_VALUE: UseVisualizerReturnValue = [null, () => {}]
 
 const InternalReactAudioViz = (props: VisualizerFullProps) => {
-  const {
-    width = window.innerWidth,
-    height = window.innerHeight,
-    model,
-    audioSrcRef,
-    analyserRef,
-    canvasRef,
-  } = props
+  const { model, audioSrcRef, analyserRef, canvasRef } = props
 
   // Maintain record of the last animation frame request ID so that we can cancel it when we need
   // to create a new handler (i.e. when the model prop changes)
   const lastAnimationFrameRequest = React.useRef<number | null>(null)
 
-  if (audioSrcRef.current && analyserRef.current && canvasRef.current) {
-    const { current: analyser } = analyserRef
-    const frequencyData = new Uint8Array(analyser.frequencyBinCount)
-
-    const createVizImageFromData = (
-      frequencyData: Uint8Array,
-      canvas: HTMLCanvasElement
-    ) => {
+  const createVizImageFromData = React.useCallback(
+    (frequencyData: Uint8Array, canvas: HTMLCanvasElement) => {
       const { width, height } = canvas
-      const canvasContext = canvas.getContext('2d')
-      if (canvasContext == null) {
-        console.error('Could not find a 2D context for the canvas')
-        return null
-      }
-      const imageData = canvasContext.createImageData(width, height)
+      const imageData = new ImageData(width, height)
       for (let y = 0, i = 0; y < height; y += 1) {
         for (let x = 0; x < width; x += 1, i += 4) {
           const { r, g, b, a } = model(
@@ -73,7 +48,13 @@ const InternalReactAudioViz = (props: VisualizerFullProps) => {
         }
       }
       return imageData
-    }
+    },
+    [model]
+  )
+
+  if (audioSrcRef.current && analyserRef.current && canvasRef.current) {
+    const { current: analyser } = analyserRef
+    const frequencyData = new Uint8Array(analyser.frequencyBinCount)
 
     let vizImage
     const renderFrame = () => {
@@ -100,16 +81,21 @@ const InternalReactAudioViz = (props: VisualizerFullProps) => {
     lastAnimationFrameRequest.current = requestAnimationFrame(renderFrame)
   }
 
-  return (
-    <div style={{ width: `${width}px`, height: `${height}px` }}>
-      <canvas
-        ref={canvasRef}
-        style={{ width: '100%', height: '100%' }}
-        width={width}
-        height={height}
-      />
-    </div>
-  )
+  const refitCanvas = React.useCallback(() => {
+    if (canvasRef.current) {
+      const { current: canvas } = canvasRef
+      canvas.width = canvas.offsetWidth
+      canvas.height = canvas.offsetHeight
+    }
+  }, [canvasRef])
+
+  refitCanvas()
+  if (ResizeObserver && canvasRef.current) {
+    const resizeObserver = new ResizeObserver(refitCanvas)
+    resizeObserver.observe(canvasRef.current)
+  }
+
+  return <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
 }
 
 const useVisualizer = (
