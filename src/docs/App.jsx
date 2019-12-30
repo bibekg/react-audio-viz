@@ -29,6 +29,25 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
+const VisualizationContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: white;
+`
+
+const VizForegroundContainer = styled.div`
+  position: relative;
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`
+
 const EverythingDiv = styled.div`
   width: 100%;
 
@@ -178,7 +197,7 @@ const App = () => {
                 <Col sm={10}>
                   <Form.Check
                     type="checkbox"
-                    value={config.darkMode}
+                    checked={config.darkMode}
                     onChange={event =>
                       configUpdater(config, 'darkMode')(event.target.checked)
                     }
@@ -192,7 +211,7 @@ const App = () => {
                 <Col sm={10}>
                   <Form.Check
                     type="checkbox"
-                    value={config.reversed}
+                    checked={config.reversed}
                     onChange={event =>
                       configUpdater(config, 'reversed')(event.target.checked)
                     }
