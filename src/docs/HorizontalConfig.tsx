@@ -35,22 +35,30 @@ const HorizontalConfig = ({ config, configUpdater, textColor }: Props) => {
             }
           />
         </Grid>
-
         <Grid item>
-          <h6>Color</h6>
-          <div>
-            <ColorPicker
-              color={config.color}
-              onChangeComplete={color =>
-                configUpdater(config, 'color')(color.hex)
-              }
-            />
-          </div>
+          <h6>Fade Bars</h6>
+          <Switch
+            checked={config.fadeBars}
+            onChange={event =>
+              configUpdater(config, 'fadeBars')(event.target.checked)
+            }
+          />
         </Grid>
+      </Grid>
+      <Grid item>
+        <h6>Color</h6>
+        <div>
+          <ColorPicker
+            color={config.color}
+            onChangeComplete={color =>
+              configUpdater(config, 'color')(color.hex)
+            }
+          />
+        </div>
       </Grid>
 
       <Grid container item alignItems="flex-start" spacing={4}>
-        <Grid item sm={12} lg={6}>
+        <Grid item xs={12} lg={6}>
           <h6>Scale</h6>
           <Slider
             name="scale"
@@ -65,7 +73,7 @@ const HorizontalConfig = ({ config, configUpdater, textColor }: Props) => {
             onChange={(event, value) => configUpdater(config, 'scale')(value)}
           />
         </Grid>
-        <Grid item sm={12} md={6}>
+        <Grid item xs={12} md={6}>
           <h6>Bin Size</h6>
           <Slider
             name="scale"
