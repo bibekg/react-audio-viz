@@ -1,28 +1,33 @@
+import { parseCSSColor } from '../util'
 import { VisualizationModel, Pixel } from './types'
 
-export type WaveformVizualizationModelOptions = {
-  direction?: 'normal' | 'reverse'
-  mode?: 'dark' | 'light'
+export type HorizontalVisualizationModelOptions = {
+  darkMode?: boolean
+  reversed?: boolean
   scale?: number
-  color?: { r: number; g: number; b: number }
+  color?: string
+  binSize?: number
   frequencyRange?: [number, number]
 }
 
 export const DEFAULT_OPTIONS = {
-  direction: 'normal',
-  mode: 'dark',
-  scale: 0.25,
-  color: { r: 255, g: 255, b: 255 },
+  darkMode: false,
+  reversed: false,
+  scale: 0.5,
+  color: '#F44E3B',
+  binSize: 50,
   frequencyRange: [0, 18000],
 }
 
 export default (
-  options: WaveformVizualizationModelOptions = {}
+  options: HorizontalVisualizationModelOptions = {}
 ): VisualizationModel => {
-  const { direction, mode, scale, color, frequencyRange } = {
+  const { reversed, darkMode, scale, color, frequencyRange, binSize } = {
     ...DEFAULT_OPTIONS,
     ...options,
   }
+
+  const parsedColor = parseCSSColor(color)
 
   const colorMakerOptions: {
     [key: string]: (c: number, f: number) => number
@@ -30,7 +35,7 @@ export default (
     dark: (c, yI) => c * (yI / 255),
     light: (c, f) => c + (255 - c) * (1 - f / 255),
   }
-  const colorMaker = colorMakerOptions[mode]
+  const colorMaker = colorMakerOptions[darkMode ? 'dark' : 'light']
 
   const frequencyIndexSelectorOptions: {
     [key: string]: (x: number, width: number, L: number) => number
@@ -39,7 +44,8 @@ export default (
     reverse: (x, width, L) => L - Math.floor((x / width) * L),
   }
 
-  const frequencyIndexSelector = frequencyIndexSelectorOptions[direction]
+  const frequencyIndexSelector =
+    frequencyIndexSelectorOptions[reversed ? 'reverse' : 'normal']
 
   return (
     x: number,
@@ -48,8 +54,9 @@ export default (
     height: number,
     frequencyData: Uint8Array
   ): Pixel => {
+    const binnedX = Math.floor(x / binSize) * binSize
     const frequencyIndex = frequencyIndexSelector(
-      x,
+      binnedX,
       width,
       // Tell the index selector to limit its options to the provided frequency range
       Math.floor(
@@ -64,9 +71,9 @@ export default (
 
     const scaledIntensity = yIntensity * frequencyMagnitudeForThisPixel
     return {
-      r: colorMaker(color.r, scaledIntensity),
-      g: colorMaker(color.g, scaledIntensity),
-      b: colorMaker(color.b, scaledIntensity),
+      r: colorMaker(parsedColor.r, scaledIntensity),
+      g: colorMaker(parsedColor.g, scaledIntensity),
+      b: colorMaker(parsedColor.b, scaledIntensity),
     }
   }
 }

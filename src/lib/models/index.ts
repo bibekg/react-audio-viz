@@ -1,8 +1,10 @@
 import polar, { DEFAULT_OPTIONS as polarDefaults } from './polar'
-import waveform, { DEFAULT_OPTIONS as waveformDefaults } from './waveform'
+import horizontal, { DEFAULT_OPTIONS as horizontalDefaults } from './horizontal'
+import pulse, { DEFAULT_OPTIONS as pulseDefaults } from './pulse'
 
-export default { polar, waveform }
+export default { polar, horizontal, pulse }
 export const defaultOptions = {
   polar: polarDefaults,
-  waveform: waveformDefaults,
+  horizontal: horizontalDefaults,
+  pulse: pulseDefaults,
 }

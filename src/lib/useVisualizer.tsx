@@ -1,4 +1,6 @@
 import * as React from 'react'
+import ResizeObserver from 'resize-observer-polyfill'
+
 import { VisualizationModel } from './models/types'
 
 type UseVisualizerReturnValue = [
@@ -29,7 +31,11 @@ const InternalReactAudioViz = (props: VisualizerFullProps) => {
   const lastAnimationFrameRequest = React.useRef<number | null>(null)
 
   const createVizImageFromData = React.useCallback(
-    (frequencyData: Uint8Array, canvas: HTMLCanvasElement) => {
+    (
+      frequencyData: Uint8Array,
+      canvas: HTMLCanvasElement,
+      lastFrameID: number
+    ) => {
       const { width, height } = canvas
       const imageData = new ImageData(width, height)
       for (let y = 0, i = 0; y < height; y += 1) {
@@ -39,7 +45,8 @@ const InternalReactAudioViz = (props: VisualizerFullProps) => {
             y + 1,
             width,
             height,
-            frequencyData
+            frequencyData,
+            lastFrameID
           )
           imageData.data[i + 0] = r
           imageData.data[i + 1] = g
@@ -62,9 +69,10 @@ const InternalReactAudioViz = (props: VisualizerFullProps) => {
       if (canvas == null) {
         return
       }
+      const lastFrameID = lastAnimationFrameRequest.current
       lastAnimationFrameRequest.current = requestAnimationFrame(renderFrame)
       analyser.getByteFrequencyData(frequencyData)
-      vizImage = createVizImageFromData(frequencyData, canvas)
+      vizImage = createVizImageFromData(frequencyData, canvas, lastFrameID)
       const canvasContext = canvas.getContext('2d')
       if (canvasContext == null || vizImage == null) {
         return
@@ -90,7 +98,7 @@ const InternalReactAudioViz = (props: VisualizerFullProps) => {
   }, [canvasRef])
 
   refitCanvas()
-  if (ResizeObserver && canvasRef.current) {
+  if (canvasRef.current) {
     const resizeObserver = new ResizeObserver(refitCanvas)
     resizeObserver.observe(canvasRef.current)
   }
@@ -129,8 +137,10 @@ const useVisualizer = (
     if (audioContextRef.current == null) {
       if ('AudioContext' in window) {
         audioContextRef.current = new AudioContext()
-      } else if ('webkitAudioContext' in window) {
-        audioContextRef.current = new webkitAudioContext()
+        // } else if ('webkitAudioContext' in window) {
+        // Known bug with webkitAudioContext (Safar/iOS): https://bugs.webkit.org/show_bug.cgi?id=203435
+        // TODO: Once that bug is fixed, re-enable the webkitAudioContext path
+        // audioContextRef.current = new webkitAudioContext()
       } else {
         console.warn("Can't show visualizations in this browser :(")
         return NOOP_RETURN_VALUE

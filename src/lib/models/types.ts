@@ -3,7 +3,8 @@ export type VisualizationModel = (
   y: number,
   width: number,
   height: number,
-  frequencyData: Uint8Array
+  frequencyData: Uint8Array,
+  frameID: number
 ) => Pixel
 
 export type Pixel = {

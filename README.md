@@ -1,6 +1,6 @@
 # react-audio-viz
 
-An audio vizualization React hook/component that's simple yet incredibly extendable
+An audio visualization React hook/component that's simple yet incredibly extendable
 
 Check out the live demo at [http://react-audio-viz.surge.sh/](http://react-audio-viz.surge.sh/)
 

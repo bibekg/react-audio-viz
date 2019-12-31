@@ -1,6 +1,7 @@
+import { parseCSSColor } from '../util'
 import { VisualizationModel, Pixel } from './types'
 
-export type PolarVizualizationModelOptions = {
+export type PolarVisualizationModelOptions = {
   darkMode?: boolean
   reversed?: boolean
   scale?: number
@@ -16,38 +17,15 @@ export const DEFAULT_OPTIONS = {
   color: 'rgb(0, 156, 224)',
 }
 
-// Source: https://stackoverflow.com/questions/11068240/what-is-the-most-efficient-way-to-parse-a-css-color-in-javascript/21966100?noredirect=1#comment69911831_21966100
-const parseRGBColor = (input: string) => {
-  if (input.substr(0, 1) == '#') {
-    const collen = (input.length - 1) / 3
-    var fact = [17, 1, 0.062272][collen - 1]
-    return {
-      r: Math.round(parseInt(input.substr(1, collen), 16) * fact),
-      g: Math.round(parseInt(input.substr(1 + collen, collen), 16) * fact),
-      b: Math.round(parseInt(input.substr(1 + 2 * collen, collen), 16) * fact),
-    }
-  }
-  const components = input
-    .split('(')[1]
-    .split(')')[0]
-    .split(',')
-  return {
-    r: Number(components[0]),
-    g: Number(components[1]),
-    b: Number(components[2]),
-    a: components.length > 3 ? Number(components[3]) : 1,
-  }
-}
-
 export default (
-  options: PolarVizualizationModelOptions = {}
+  options: PolarVisualizationModelOptions = {}
 ): VisualizationModel => {
   const { reversed, scale, darkMode, color, binSize } = {
     ...DEFAULT_OPTIONS,
     ...options,
   }
 
-  const parsedColor = parseRGBColor(color) || { r: 0, g: 0, b: 0 }
+  const parsedColor = parseCSSColor(color) || { r: 0, g: 0, b: 0 }
 
   const colorMakerOptions: {
     [key: string]: (c: number, f: number) => number
