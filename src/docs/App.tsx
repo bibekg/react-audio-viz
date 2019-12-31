@@ -158,7 +158,10 @@ const App = withRouter(({ history }: Props) => {
     defaultOptions[selectedModel]
   )
 
-  const model = React.useMemo(() => models[selectedModel](config), [config])
+  const model = React.useMemo(
+    () => (selectedModel ? models[selectedModel](config) : null),
+    [selectedModel, config]
+  )
   const configUpdater = (oldConfig, key) => newValue => {
     changeModelConfig({ ...oldConfig, [key]: newValue })
   }
@@ -171,8 +174,8 @@ const App = withRouter(({ history }: Props) => {
     }
   })
 
-  const bgColor = config.color
-  const textColor = idealTextColor(config.color)
+  const bgColor = config ? config.color : '#333'
+  const textColor = config ? idealTextColor(config.color) : '#fff'
 
   return (
     <EverythingDiv>
@@ -181,7 +184,7 @@ const App = withRouter(({ history }: Props) => {
         <Grid item md={6} xs={12}>
           <VizArea>
             <VisualizationContainer>
-              {ReactAudioViz ? <ReactAudioViz model={model} /> : null}
+              {ReactAudioViz && model ? <ReactAudioViz model={model} /> : null}
             </VisualizationContainer>
             <VizForegroundContainer>
               <PlayPrompt
@@ -216,14 +219,13 @@ const App = withRouter(({ history }: Props) => {
               </h5>
               <br />
             </Heading>
-            {config && (
-              <Configurator
-                config={config}
-                configUpdater={configUpdater}
-                bgColor={bgColor}
-                textColor={textColor}
-              />
-            )}
+            <Configurator
+              config={config}
+              configUpdater={configUpdater}
+              bgColor={bgColor}
+              textColor={textColor}
+            />
+            <p>Sample audio from bensound.com</p>
           </ControlArea>
         </Grid>
       </Grid>

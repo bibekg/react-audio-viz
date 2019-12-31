@@ -9,6 +9,8 @@ import { PolarVisualizationModelOptions } from '../lib/models/polar'
 import PolarConfig from './PolarConfig'
 import HorizontalConfig from './HorizontalConfig'
 import PulseConfig from './PulseConfig'
+import { HorizontalVisualizationModelOptions } from '../lib/models/horizontal'
+import { PulseVisualizationModelOptions } from '../lib/models/pulse'
 
 const Wrapper = styled.div`
   h4 a {
@@ -86,7 +88,11 @@ const makeDemoReactCode = (modelName, configObject) => `
 `
 
 interface Props {
-  config: PolarVisualizationModelOptions
+  config:
+    | PolarVisualizationModelOptions
+    | HorizontalVisualizationModelOptions
+    | PulseVisualizationModelOptions
+    | null
   configUpdater: any
   textColor: string
   bgColor: string
@@ -114,7 +120,10 @@ const Configurator = ({ config, configUpdater, textColor, bgColor }: Props) => {
   return (
     <Wrapper textColor={textColor}>
       <Step>
-        Choose a visualization model <a href="#">(or build your own model)</a>
+        Choose a visualization model...
+        <div>
+          <a href="#">(or build your own)</a>
+        </div>
       </Step>
       <Tabs bgColor={bgColor} textColor={textColor}>
         {models.map(({ name, path }) => (
@@ -123,21 +132,23 @@ const Configurator = ({ config, configUpdater, textColor, bgColor }: Props) => {
           </Tab>
         ))}
       </Tabs>
-      <Step>Play around with the model's settings</Step>
+      <Step>...then fine tune the model's settings</Step>
       <Content>
         <Switch>
-          <Route exact path="/">
-            <Redirect to={models[0].path} />
-          </Route>
           {models.map(({ name, path, Component }) => (
             <Route key={name} path={path}>
-              <Component
-                config={config}
-                configUpdater={configUpdater}
-                textColor={textColor}
-              />
+              {config && (
+                <Component
+                  config={config}
+                  configUpdater={configUpdater}
+                  textColor={textColor}
+                />
+              )}
             </Route>
           ))}
+          <Route>
+            <Redirect to={models[0].path} />
+          </Route>
         </Switch>
         <Step>It's that easy!</Step>
         {models.map(({ name, path, configRenderer }) => (
