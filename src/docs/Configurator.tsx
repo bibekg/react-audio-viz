@@ -2,8 +2,8 @@ import * as React from 'react'
 import { inspect } from 'util'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
 import styled from 'styled-components'
-import SyntaxHighligher from 'react-syntax-highlighter/prism'
-import { okaidia } from 'react-syntax-highlighter/dist/styles/prism'
+import SyntaxHighligher from 'react-syntax-highlighter/dist/esm/prism'
+import { okaidia } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 
 import { PolarVisualizationModelOptions } from '../lib/models/polar'
 import PolarConfig from './PolarConfig'
@@ -76,7 +76,7 @@ const makeDemoReactCode = (modelName, configObject) => `
 
   return (
     <div>
-      <audio ref={audioRef} onPlay={init} {...otherProps} />
+      <audio ref={audioRef} onPlay={init} src={...} />
       <AudioViz
         model={models.${modelName}(${inspect(configObject)
   .replace('{ ', '{\n  ')
@@ -153,9 +153,11 @@ const Configurator = ({ config, configUpdater, textColor, bgColor }: Props) => {
         <Step>It's that easy!</Step>
         {models.map(({ name, path, configRenderer }) => (
           <Route key={name} path={path}>
-            <SyntaxHighligher language="jsx" style={okaidia}>
-              {makeDemoReactCode(name, config)}
-            </SyntaxHighligher>
+            <snippet-highlight
+              theme="dark"
+              language="jsx"
+              content={makeDemoReactCode(name, config)}
+            />
           </Route>
         ))}
       </Content>

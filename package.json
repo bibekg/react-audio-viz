@@ -20,7 +20,8 @@
     "lib:build": "npm run type-check && parcel build ./src/index.html --public-url '/'",
     "docs:dev": "parcel serve src/docs/200.html -d dev/docs",
     "docs:build": "parcel build src/docs/200.html -d dist/docs",
-    "docs:deploy": "yarn docs:build && surge dist/docs --domain react-audio-viz.surge.sh",
+    "docs:clean": "rm -rf dist/docs",
+    "docs:deploy": "yarn docs:clean && yarn docs:build && surge dist/docs --domain react-audio-viz.surge.sh",
     "dev": "yarn docs:dev",
     "build": "concurrently -r \"yarn lib:build\" \"yarn docs:build\"",
     "deploy": "yarn docs:deploy"
@@ -64,7 +65,8 @@
     "react-router-dom": "^5.1.2",
     "react-select": "^3.0.8",
     "react-switch": "^5.0.1",
-    "react-syntax-highlighter": "9.0.1",
+    "react-syntax-highlighter": "^12.2.1",
+    "snippet-highlight": "^1.0.2",
     "styled-components": "^4.4.1"
   },
   "devDependencies": {
