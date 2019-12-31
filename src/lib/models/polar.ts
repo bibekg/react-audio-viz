@@ -14,7 +14,7 @@ export const DEFAULT_OPTIONS = {
   reversed: false,
   scale: 2,
   binSize: 50,
-  color: 'rgb(0, 156, 224)',
+  color: '#009CE0',
 }
 
 export default (

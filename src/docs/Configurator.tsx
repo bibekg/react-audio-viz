@@ -71,20 +71,25 @@ const Tabs = styled.div`
 const Content = styled.div``
 
 const makeDemoReactCode = (modelName, configObject) => `
-  const audioRef = React.useRef(null)
-  const [AudioViz, init] = useVisualizer(audioRef)
+  import * as React from 'react'
+  import {useVisualizer, models} from 'react-audio-viz'
 
-  return (
-    <div>
-      <audio ref={audioRef} onPlay={init} src={...} />
-      <AudioViz
-        model={models.${modelName}(${inspect(configObject)
+  const Visualizer = () => {
+    const audioRef = React.useRef(null)
+    const [AudioViz, init] = useVisualizer(audioRef)
+
+    return (
+      <div>
+        <audio ref={audioRef} onPlay={init} src={...} />
+        <AudioViz
+          model={models.${modelName}(${inspect(configObject)
   .replace('{ ', '{\n  ')
   .replace(' }', '\n}')
-  .replace(/\n/g, '\n        ')})}
-      />
-    </div>
-  )
+  .replace(/\n/g, '\n          ')})}
+        />
+      </div>
+    )
+  }
 `
 
 interface Props {
