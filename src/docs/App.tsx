@@ -2,14 +2,13 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { withRouter, BrowserRouter } from 'react-router-dom'
 import styled, { createGlobalStyle } from 'styled-components'
-
+import { makeStyles } from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
 import 'rc-slider/assets/index.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-import Configurator from './Configurator'
-import Row from 'react-bootstrap/Row'
-
 import audioFile from './sample.mp3'
+import Configurator from './Configurator'
 import { useVisualizer, models } from '../lib'
 import { defaultOptions } from '../lib/models'
 import { PolarVisualizationModelOptions } from '../lib/models/polar'
@@ -70,23 +69,34 @@ const EverythingDiv = styled.div`
 
 const Column = styled.div`
   width: 100%;
-  position: relative;
+
   @media (min-width: 768px) {
     width: 50%;
   }
 `
 
 const VizArea = styled.div`
-  height: 100vh;
+  position: relative;
+  height: 35vh;
   overflow-y: hidden;
+
+  @media (min-width: 960px) {
+    height: 100vh;
+  }
 `
 
 const Heading = styled.div``
 const ControlArea = styled.div`
+  position: relative;
   background: ${props => props.bgColor || '#333'};
   color: ${props => props.textColor};
-  height: 100vh;
-  overflow-y: auto;
+
+  height: 80vh;
+  overflow-y: scroll;
+  @media (min-width: 960px) {
+    height: 100vh;
+  }
+
   padding: 50px;
 
   .form-group.row {
@@ -167,8 +177,8 @@ const App = withRouter(({ history }: Props) => {
   return (
     <EverythingDiv>
       <GlobalStyle />
-      <Row>
-        <Column>
+      <Grid container>
+        <Grid item md={6} xs={12}>
           <VizArea>
             <VisualizationContainer>
               {ReactAudioViz ? <ReactAudioViz model={model} /> : null}
@@ -195,8 +205,8 @@ const App = withRouter(({ history }: Props) => {
               />
             </VizForegroundContainer>
           </VizArea>
-        </Column>
-        <Column>
+        </Grid>
+        <Grid item md={6} xs={12}>
           <ControlArea bgColor={bgColor} textColor={textColor}>
             <Heading>
               <h1>react-audio-viz</h1>
@@ -215,8 +225,8 @@ const App = withRouter(({ history }: Props) => {
               />
             )}
           </ControlArea>
-        </Column>
-      </Row>
+        </Grid>
+      </Grid>
     </EverythingDiv>
   )
 })
