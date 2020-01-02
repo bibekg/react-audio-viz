@@ -2,8 +2,8 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { withRouter, BrowserRouter } from 'react-router-dom'
 import styled, { createGlobalStyle } from 'styled-components'
-import { makeStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
+import GitHubButton from 'react-github-btn'
 import 'rc-slider/assets/index.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -217,6 +217,14 @@ const App = withRouter(({ history }: Props) => {
                 A delightfully simple yet impressively extendable audio
                 visualization framework for React
               </h5>
+              <GitHubButton
+                href="https://github.com/bibekg/react-audio-viz"
+                data-size="large"
+                data-show-count="true"
+                aria-label="Star bibekg/react-audio-viz on GitHub"
+              >
+                Star
+              </GitHubButton>
               <br />
             </Heading>
             <Configurator

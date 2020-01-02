@@ -51,7 +51,8 @@ export default (
     y: number,
     width: number,
     height: number,
-    frequencyData: Uint8Array
+    frequencyData: Uint8Array,
+    frameID: number
   ): Pixel => {
     const centerX = Math.floor(width / 2)
     const centerY = Math.floor(height / 2)
