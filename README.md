@@ -30,9 +30,9 @@ const App = () => {
         ref={mediaElementRef}
         src={AUDIO_SRC}
       />
-      {ReactAudioViz && (
-        <ReactAudioViz width={400} height={400} model={models.polar()} />
-      )}
+      <div style={{ width: '400', height: '400' }}>
+        {ReactAudioViz && <ReactAudioViz model={models.polar()} />}
+      </div>
     </div>
   )
 }
@@ -44,7 +44,7 @@ const App = () => {
 
 `useVisualizer` accepts a single argument which is a ref object (i.e. `React.useRef` result) that corresponds to the `<audio />` or `<video />` element you are trying to render a visualization of.
 
-It returns a tuple containing a `ReactAudioViz` component and an `initializer` function.
+It returns a tuple containing a `ReactAudioViz` component and an `initializer` function, both of which may be `null` if an error occurs (e.g. the `mediaElementRef` doesn't point to a valid media element).
 
 ### `ReactAudioViz`
 
