@@ -2,8 +2,6 @@ import * as React from 'react'
 import { inspect } from 'util'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
 import styled from 'styled-components'
-import SyntaxHighligher from 'react-syntax-highlighter/dist/esm/prism'
-import { okaidia } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 
 import { PolarVisualizationModelOptions } from '../lib/models/polar'
 import PolarConfig from './PolarConfig'
@@ -12,17 +10,17 @@ import PulseConfig from './PulseConfig'
 import { HorizontalVisualizationModelOptions } from '../lib/models/horizontal'
 import { PulseVisualizationModelOptions } from '../lib/models/pulse'
 
+const Step = styled.h2`
+  margin: 14px 0;
+`
+
 const Wrapper = styled.div`
-  h4 a {
+  ${Step} a {
     color: ${props => props.textColor};
     font-size: 0.6em;
     text-decoration: underline;
     margin-bottom: 10px;
   }
-`
-
-const Step = styled.h4`
-  margin: 14px 0;
 `
 
 const Tab = styled(NavLink)`

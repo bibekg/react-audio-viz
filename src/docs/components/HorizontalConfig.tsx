@@ -2,7 +2,7 @@ import * as React from 'react'
 import { CompactPicker as ColorPicker } from 'react-color'
 import Grid from '@material-ui/core/Grid'
 
-import { HorizontalVisualizationModelOptions } from '../lib/models/horizontal'
+import { HorizontalVisualizationModelOptions } from '../../lib/models/horizontal'
 import Switch from './Switch'
 import Slider from './Slider'
 
@@ -17,7 +17,7 @@ const HorizontalConfig = ({ config, configUpdater, textColor }: Props) => {
     <Grid container spacing={4}>
       <Grid container item alignItems="flex-start" spacing={2}>
         <Grid item>
-          <h6>Dark Mode</h6>
+          <h3>Dark Mode</h3>
           <Switch
             checked={config.darkMode}
             onChange={event =>
@@ -27,7 +27,7 @@ const HorizontalConfig = ({ config, configUpdater, textColor }: Props) => {
         </Grid>
 
         <Grid item>
-          <h6>Reverse Direction</h6>
+          <h3>Reverse Direction</h3>
           <Switch
             checked={config.reversed}
             onChange={event =>
@@ -36,7 +36,7 @@ const HorizontalConfig = ({ config, configUpdater, textColor }: Props) => {
           />
         </Grid>
         <Grid item>
-          <h6>Fade Bars</h6>
+          <h3>Fade Bars</h3>
           <Switch
             checked={config.fadeBars}
             onChange={event =>
@@ -46,7 +46,7 @@ const HorizontalConfig = ({ config, configUpdater, textColor }: Props) => {
         </Grid>
       </Grid>
       <Grid item>
-        <h6>Color</h6>
+        <h3>Color</h3>
         <div>
           <ColorPicker
             color={config.color}
@@ -59,7 +59,7 @@ const HorizontalConfig = ({ config, configUpdater, textColor }: Props) => {
 
       <Grid container item alignItems="flex-start" spacing={4}>
         <Grid item xs={12} lg={6}>
-          <h6>Scale</h6>
+          <h3>Scale</h3>
           <Slider
             name="scale"
             color={textColor}
@@ -74,7 +74,7 @@ const HorizontalConfig = ({ config, configUpdater, textColor }: Props) => {
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <h6>Bin Size</h6>
+          <h3>Bin Size</h3>
           <Slider
             name="scale"
             color={textColor}
@@ -90,7 +90,7 @@ const HorizontalConfig = ({ config, configUpdater, textColor }: Props) => {
         </Grid>
       </Grid>
       <Grid item xs={12}>
-        <h6>Frequency Range</h6>
+        <h3>Frequency Range</h3>
         <Slider
           name="scale"
           color={textColor}

@@ -2,7 +2,7 @@ import * as React from 'react'
 import { CompactPicker as ColorPicker } from 'react-color'
 import Grid from '@material-ui/core/Grid'
 
-import { PolarVisualizationModelOptions } from '../lib/models/polar'
+import { PolarVisualizationModelOptions } from '../../lib/models/polar'
 import Switch from './Switch'
 import Slider from './Slider'
 
@@ -17,7 +17,7 @@ const PolarConfig = ({ config, configUpdater, textColor }: Props) => {
     <Grid container spacing={4}>
       <Grid container item alignItems="flex-start" spacing={2}>
         <Grid item>
-          <h6>Dark Mode</h6>
+          <h3>Dark Mode</h3>
           <Switch
             checked={config.darkMode}
             onChange={event =>
@@ -27,7 +27,7 @@ const PolarConfig = ({ config, configUpdater, textColor }: Props) => {
         </Grid>
 
         <Grid item>
-          <h6>Reverse Direction</h6>
+          <h3>Reverse Direction</h3>
           <Switch
             checked={config.reversed}
             onChange={event =>
@@ -37,7 +37,7 @@ const PolarConfig = ({ config, configUpdater, textColor }: Props) => {
         </Grid>
 
         <Grid item>
-          <h6>Color</h6>
+          <h3>Color</h3>
           <div>
             <ColorPicker
               color={config.color}
@@ -51,7 +51,7 @@ const PolarConfig = ({ config, configUpdater, textColor }: Props) => {
 
       <Grid container item alignItems="flex-start" spacing={2}>
         <Grid item md={6}>
-          <h6>Scale</h6>
+          <h3>Scale</h3>
           <Slider
             name="scale"
             color={textColor}
@@ -66,7 +66,7 @@ const PolarConfig = ({ config, configUpdater, textColor }: Props) => {
           />
         </Grid>
         <Grid item md={6}>
-          <h6>Bin Size</h6>
+          <h3>Bin Size</h3>
           <Slider
             name="scale"
             color={textColor}

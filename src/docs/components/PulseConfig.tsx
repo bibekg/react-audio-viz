@@ -2,8 +2,7 @@ import * as React from 'react'
 import { CompactPicker as ColorPicker } from 'react-color'
 import Grid from '@material-ui/core/Grid'
 
-import { PulseVisualizationModelOptions } from '../lib/models/pulse'
-import Switch from './Switch'
+import { PulseVisualizationModelOptions } from '../../lib/models/pulse'
 import Slider from './Slider'
 
 interface Props {
@@ -16,7 +15,7 @@ const PulseConfig = ({ config, configUpdater, textColor }: Props) => {
   return (
     <Grid container spacing={4}>
       <Grid item xs={12}>
-        <h6>Color</h6>
+        <h3>Color</h3>
         <div>
           <ColorPicker
             color={config.color}
@@ -27,7 +26,7 @@ const PulseConfig = ({ config, configUpdater, textColor }: Props) => {
         </div>
       </Grid>
       <Grid item xs={12}>
-        <h6>Frequency Range</h6>
+        <h3>Frequency Range</h3>
         <Slider
           name="scale"
           color={textColor}

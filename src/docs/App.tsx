@@ -4,11 +4,9 @@ import { withRouter, BrowserRouter } from 'react-router-dom'
 import styled, { createGlobalStyle } from 'styled-components'
 import Grid from '@material-ui/core/Grid'
 import GitHubButton from 'react-github-btn'
-import 'rc-slider/assets/index.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
 
 import audioFile from './sample.mp3'
-import Configurator from './Configurator'
+import Configurator from './components/Configurator'
 import { useVisualizer, models } from '../lib'
 import { defaultOptions } from '../lib/models'
 import { PolarVisualizationModelOptions } from '../lib/models/polar'
@@ -18,6 +16,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     font-family: sans-serif;
     overflow-y: hidden;
+    margin: 0;
   }
 
   * {
@@ -48,7 +47,7 @@ const VizForegroundContainer = styled.div`
   justify-content: flex-end;
 `
 
-const PlayPrompt = styled.h5`
+const PlayPrompt = styled.h3`
   background-color: ${props => props.bgColor};
   color: ${props => props.textColor};
   padding: 10px;
@@ -213,10 +212,10 @@ const App = withRouter(({ history }: Props) => {
           <ControlArea bgColor={bgColor} textColor={textColor}>
             <Heading>
               <h1>react-audio-viz</h1>
-              <h5>
+              <h3>
                 A delightfully simple yet impressively extendable audio
                 visualization framework for React
-              </h5>
+              </h3>
               <GitHubButton
                 href="https://github.com/bibekg/react-audio-viz"
                 data-size="large"
