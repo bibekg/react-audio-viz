@@ -1,6 +1,5 @@
 node_modules/
 public/
-dist/
 dev/
 .cache/
 .vscode/
