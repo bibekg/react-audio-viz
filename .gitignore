@@ -1,6 +1,7 @@
 node_modules/
 public/
 dev/
+dist/docs
 .cache/
 .vscode/
 .idea/
