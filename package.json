@@ -1,6 +1,6 @@
 {
   "name": "react-audio-viz",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A delightfully simple yet impressively extendable audio visualization framework for React",
   "repository": {
     "type": "git",
