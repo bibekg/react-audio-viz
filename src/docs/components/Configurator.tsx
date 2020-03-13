@@ -1,14 +1,21 @@
 import * as React from 'react'
 import { inspect } from 'util'
-import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
+import { Switch, Route, Redirect, NavLink, withRouter } from 'react-router-dom'
 import styled from 'styled-components'
+import { transparentize } from 'polished'
+import { withStyles, createStyles, Theme, makeStyles } from '@material-ui/core'
+import Tabs from '@material-ui/core/Tabs'
+import Tab from '@material-ui/core/Tab'
 
-import { PolarVisualizationModelOptions } from '../lib/models/polar'
 import PolarConfig from './PolarConfig'
 import HorizontalConfig from './HorizontalConfig'
 import PulseConfig from './PulseConfig'
+import { PolarVisualizationModelOptions } from '../lib/models/polar'
 import { HorizontalVisualizationModelOptions } from '../lib/models/horizontal'
 import { PulseVisualizationModelOptions } from '../lib/models/pulse'
+
+const BUILD_CUSTOM_MODEL_LINK =
+  'https://github.com/bibekg/react-audio-viz#building-a-custom-visualization-model'
 
 const Step = styled.h2`
   margin: 14px 0;
@@ -20,49 +27,6 @@ const Wrapper = styled.div`
     font-size: 0.6em;
     text-decoration: underline;
     margin-bottom: 10px;
-  }
-`
-
-const Tab = styled(NavLink)`
-  &,
-  a {
-    :hover {
-      text-decoration: none;
-    }
-  }
-  font-size: 24px;
-`
-
-const Tabs = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  align-content: stretch;
-  text-align: center;
-  border-radius: 10px
-  border: 2px solid ${props => props.textColor}
-  margin-bottom: 30px;
-  
-  ${Tab} {
-    padding: 10px 0;
-    flex-grow: 1;
-    color: ${props => props.textColor}
-    &:not(:last-child) {
-      border-right: 2px solid ${props => props.textColor}
-    }
-    &.active {
-      background-color: ${props => props.textColor};
-      color: ${props => props.bgColor}
-    }
-
-    &:first-child {
-      border-top-left-radius: 7px;
-      border-bottom-left-radius: 7px;
-    }
-    &:last-child {
-      border-top-right-radius: 7px;
-      border-bottom-right-radius: 7px;
-    }
   }
 `
 
@@ -89,6 +53,36 @@ const makeDemoReactCode = (modelName, configObject) => `
     )
   }
 `
+interface StyledTabsProps extends React.ComponentProps<typeof Tabs> {
+  fgColor: string
+}
+
+interface StyledTabProps extends React.ComponentProps<typeof Tab> {
+  fgColor: string
+}
+
+const StyledTabs = withStyles({
+  indicator: (props: StyledTabsProps) => ({
+    backgroundColor: props.fgColor,
+  }),
+})((props: StyledTabsProps) => <Tabs {...props} />)
+
+const StyledTab = withStyles({
+  root: (props: StyledTabProps) => ({
+    borderBottom: `2px solid ${transparentize(0.5, props.fgColor)}`,
+    '&:hover': {
+      color: props.fgColor,
+      opacity: 1,
+    },
+    '&$selected': {
+      color: props.fgColor,
+    },
+    '&:focus': {
+      color: props.fgColor,
+    },
+    color: props.fgColor,
+  }),
+})((props: StyledTabProps) => <Tab disableRipple {...props} />)
 
 interface Props {
   config:
@@ -99,9 +93,10 @@ interface Props {
   configUpdater: any
   textColor: string
   bgColor: string
+  history: any
 }
 
-const Configurator = ({ config, configUpdater, textColor, bgColor }: Props) => {
+const Configurator = ({ config, configUpdater, textColor, history }: Props) => {
   const models = [
     {
       name: 'polar',
@@ -120,21 +115,35 @@ const Configurator = ({ config, configUpdater, textColor, bgColor }: Props) => {
     },
   ]
 
+  const handleCallToRouter = value => {
+    history.push(value)
+  }
+
   return (
     <Wrapper textColor={textColor}>
       <Step>
         Choose a visualization model...
         <div>
-          <a href="#">(or build your own)</a>
+          <a href={BUILD_CUSTOM_MODEL_LINK}>(or build your own)</a>
         </div>
       </Step>
-      <Tabs bgColor={bgColor} textColor={textColor}>
+      <StyledTabs
+        fgColor={textColor}
+        variant="fullWidth"
+        value={history.location.pathname}
+        onChange={handleCallToRouter}
+      >
         {models.map(({ name, path }) => (
-          <Tab key={name} to={path}>
-            {name}
-          </Tab>
+          <StyledTab
+            value={path}
+            fgColor={textColor}
+            component={NavLink}
+            label={name}
+            key={name}
+            to={path}
+          />
         ))}
-      </Tabs>
+      </StyledTabs>
       <Step>...then fine tune the model's settings</Step>
       <Content>
         <Switch>
@@ -154,7 +163,7 @@ const Configurator = ({ config, configUpdater, textColor, bgColor }: Props) => {
           </Route>
         </Switch>
         <Step>It's that easy!</Step>
-        {models.map(({ name, path, configRenderer }) => (
+        {models.map(({ name, path }) => (
           <Route key={name} path={path}>
             <snippet-highlight
               theme="dark"
@@ -167,4 +176,4 @@ const Configurator = ({ config, configUpdater, textColor, bgColor }: Props) => {
     </Wrapper>
   )
 }
-export default Configurator
+export default withRouter(Configurator)

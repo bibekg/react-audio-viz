@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom'
 import { withRouter, BrowserRouter } from 'react-router-dom'
 import styled, { createGlobalStyle } from 'styled-components'
 import Grid from '@material-ui/core/Grid'
+import CssBaseline from '@material-ui/core/CssBaseline'
 import GitHubButton from 'react-github-btn'
 
 import audioFile from './sample.mp3'
@@ -44,7 +45,7 @@ const VizForegroundContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
 `
 
 const PlayPrompt = styled.h3`
@@ -178,6 +179,7 @@ const App = withRouter(({ history }: Props) => {
 
   return (
     <EverythingDiv>
+      <CssBaseline />
       <GlobalStyle />
       <Grid container>
         <Grid item md={6} xs={12}>
@@ -186,13 +188,6 @@ const App = withRouter(({ history }: Props) => {
               {ReactAudioViz && model ? <ReactAudioViz model={model} /> : null}
             </VisualizationContainer>
             <VizForegroundContainer>
-              <PlayPrompt
-                bgColor={bgColor}
-                textColor={textColor}
-                show={!isPlaying}
-              >
-                Start by pressing play!
-              </PlayPrompt>
               <audio
                 controls={true}
                 onPlay={() => {
@@ -205,6 +200,13 @@ const App = withRouter(({ history }: Props) => {
                 ref={mediaElementRef}
                 src={audioFile}
               />
+              <PlayPrompt
+                bgColor={bgColor}
+                textColor={textColor}
+                show={!isPlaying}
+              >
+                Start by pressing play!
+              </PlayPrompt>
             </VizForegroundContainer>
           </VizArea>
         </Grid>

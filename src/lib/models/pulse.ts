@@ -7,8 +7,8 @@ export type PulseVisualizationModelOptions = {
 }
 
 export const DEFAULT_OPTIONS = {
-  color: '#FCDC00',
-  frequencyRange: [1000, 12000],
+  color: '#008800',
+  frequencyRange: [4000, 12000],
 }
 
 export default (
